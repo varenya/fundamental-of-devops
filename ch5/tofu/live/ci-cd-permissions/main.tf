@@ -9,8 +9,7 @@ module "oidc_provider" {
 }
 
 module "iam_roles" {
-  source  = "brikis98/devops/book//modules/gh-actions-iam-roles"
-  version = "1.0.0"
+  source = "brikis98/devops/book//modules/gh-actions-iam-roles"
 
   name              = "lambda-sample"
   oidc_provider_arn = module.oidc_provider.oidc_provider_arn
