@@ -16,7 +16,7 @@ module "iam_roles" {
 
   enable_iam_role_for_testing = true
 
-  github_repo      = "varenya/fundamental-of-devops"
+  github_repo      = "varenya@4066143/fundamental-of-devops@1424610216"
   lambda_base_name = "lambda-sample"
 
 }
