@@ -1,12 +1,10 @@
 name: Tofu Apply
-
 on:
-  push:
+  push:                                                                      
     branches: ["main"]
     paths: ["ch5/tofu/live/lambda-sample/**"]
-
 jobs:
-  plan:
+  apply:
     name: "Tofu Apply"
     runs-on: ubuntu-latest
     permissions:
@@ -18,25 +16,30 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: "arn:aws:iam::060795927723:role/lambda-sample-apply"
-          role-session-name: plan-${{ github.run_number }}-${{ github.actor }}
-          region: us-east-2
+          role-to-assume: arn:aws:iam::060795927723:role/lambda-sample-apply
+          role-session-name: apply-${{ github.run_number }}-${{ github.actor }}
+          aws-region: us-east-2
 
       - uses: opentofu/setup-opentofu@v1
 
-      - name: tofu apply
-        id: plan
+      - name: tofu apply                                                     
+        id: apply
         working-directory: ch5/tofu/live/lambda-sample
         run: |
           tofu init -no-color -input=false
-          tofu apply -no-color -input=false -lock=false
+          tofu apply -no-color -input=false -lock-timeout=60m -auto-approve
 
-     - uses: peter-evans/create-or-update-comment@v4                       
-        if: always()
+      - uses: jwalton/gh-find-current-pr@master                              
+        id: find_pr
+        with:
+          state: all
+
+      - uses: peter-evans/create-or-update-comment@v4                        
+        if: steps.find_pr.outputs.number
         env:
           RESULT_EMOJI: ${{ steps.apply.outcome == 'success' && '✅' || '⚠️' }}
         with:
           issue-number: ${{ steps.find_pr.outputs.number }}
           body: |
             ## ${{ env.RESULT_EMOJI }} `tofu apply` output
-            ```${{ steps.plan.outputs.stdout }}```
+            ```${{ steps.apply.outputs.stdout }}```
