@@ -1,7 +1,7 @@
 name: Tofu Apply
 
 on:
-  pull_request:
+  push:
     branches: ["main"]
     paths: ["ch5/tofu/live/lambda-sample/**"]
 
